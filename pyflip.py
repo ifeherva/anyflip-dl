@@ -4,6 +4,7 @@ import shutil
 
 import requests
 from PIL import Image
+from tqdm import tqdm
 
 
 class Flipbook:
@@ -100,6 +101,7 @@ class Pyflip:
         except requests.RequestException as e:
             return f"An error occurred: {e}"
 
+    @staticmethod
     def prepare_download(anyflip_url: str) -> Flipbook:
         """Create a `Flipbook` object for download
 
@@ -133,6 +135,7 @@ class Pyflip:
 
         return new_flipbook
 
+    @staticmethod
     def download_images(download_folder: str, flipbook: Flipbook):
         """Downloads the PDF as a series of images"""
         try:
@@ -142,7 +145,7 @@ class Pyflip:
             return str(e)
 
         # Downloads the PDF page by page
-        for page in range(flipbook.page_count):
+        for page in tqdm(range(flipbook.page_count)):
             download_url = flipbook.page_urls[page]
             response = requests.get(download_url)
 
@@ -159,11 +162,9 @@ class Pyflip:
             except Exception as e:
                 print(str(e))
 
+    @staticmethod
     def create_pdf(output_file: str, img_dir: str, keep_folder: bool = False):
         """Put the images together in an array and then turn it into a PDF."""
-        # Sanitize output_file
-        output_file = output_file.replace("'", "").replace("\\", "").replace(":", "")
-        output_file = output_file + ".pdf"
 
         # Get a list of all image files in the specified folder
         image_files = [
